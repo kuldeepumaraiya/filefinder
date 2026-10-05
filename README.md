@@ -1,96 +1,96 @@
-<p align="center"><img src="src/assets/filefinder.png" width="96" alt="FileFinder logo"></p>
+<p align="center">
+  <img src="src/assets/filefinder.png" width="104" alt="FileFinder logo">
+</p>
+<h1 align="center">FileFinder</h1>
+<p align="center"><strong>Remember a name. Remember a phrase. Find your file.</strong></p>
+<p align="center">Search filenames and document contents on your Windows PC, with local indexing and in-app previews.</p>
+<p align="center">
+  <a href="https://github.com/kuldeepumaraiya/filefinder/actions/workflows/windows.yml"><img src="https://github.com/kuldeepumaraiya/filefinder/actions/workflows/windows.yml/badge.svg" alt="Windows build and tests"></a>
+  <a href="https://github.com/kuldeepumaraiya/filefinder/releases/latest"><img src="https://img.shields.io/github/v/release/kuldeepumaraiya/filefinder?color=6654d9" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-6654d9" alt="MIT license"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.1.0/FileFinder-Windows-v2.1.0.zip"><strong>Download for Windows</strong></a> ·
+  <a href="docs/USER_GUIDE.md">User guide</a> ·
+  <a href="CHANGELOG.md">What's new</a> ·
+  <a href="https://github.com/kuldeepumaraiya/filefinder/issues/new/choose">Report an issue</a>
+</p>
 
-# FileFinder
+## Find it, preview it, open it
 
-A private Windows desktop search app for finding files by their name or words inside them. Built with Python, Tkinter, SQLite FTS5, and pypdf. Licensed under MIT.
+| Feature | What you can do |
+| --- | --- |
+| **Search names and contents** | Find a file from part of its name, document words, or an exact phrase. |
+| **Choose your folders** | Index selected folders or drives and filter results by file type. |
+| **Jump between matches** | Use Previous / Next to highlight each mention, with a match count and text line number. |
+| **Preview files** | Read extracted document text, view images, and browse rendered PDF pages. |
+| **Keep it local** | Search with a local index. The app makes no network requests. |
+| **Install or carry it** | Use the per-user installer or run the portable app. Python is bundled. |
 
 ## Download and install
 
-### [Download the Windows app → FileFinder-Windows-v2.1.0.zip](https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.1.0/FileFinder-Windows-v2.1.0.zip)
+### [Download FileFinder 2.1.0 for Windows](https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.1.0/FileFinder-Windows-v2.1.0.zip)
 
-**For normal use, click the download link above.** GitHub's green **Code → Download ZIP** button downloads developer source code (`filefinder-main`), which does not contain `FileFinder.exe`.
+**Windows 10 / 11 · 64-bit · No Python installation required**
 
 1. Download **FileFinder-Windows-v2.1.0.zip** using the link above.
 2. Right-click the ZIP and choose **Extract All**.
 3. Open the extracted **FileFinder-Windows-v2.1.0** folder.
-4. Double-click **Install.cmd**. Windows may show it as **Install**, with type **Windows Command Script**, when extensions are hidden.
+4. Double-click **Install.cmd**. If extensions are hidden, look for **Install** with type **Windows Command Script**.
+5. Launch **FileFinder** from your desktop or Start Menu.
 
-The correct folder contains **FileFinder.exe**, **_internal**, and **Install.cmd together**. If you see `src`, `scripts`, `tests`, or a `distribution` folder containing just installer scripts, you have the developer source package. Download the Windows app using the link above.
+Your extracted folder should look like this:
 
-- **Install:** run `Install.cmd`. It installs for your Windows user, creates Start Menu and desktop shortcuts, and requires no administrator access.
-- **Portable:** put the extracted folder in a writable location and open `FileFinder.exe`. Keep `_internal` next to the executable.
-- **Taskbar:** launch the executable, right-click its taskbar icon, and choose **Pin to taskbar**.
+```text
+FileFinder-Windows-v2.1.0/
+├── FileFinder.exe
+├── _internal/
+├── Install.cmd       ← run this
+├── Install.ps1
+├── licenses/
+└── ...
+```
 
-The executable bundles its Python runtime. Builds are currently unsigned. Windows 10/11 x64 is the intended platform; ARM and 32-bit Windows builds are not provided. All downloadable builds are on the [Releases page](https://github.com/kuldeepumaraiya/filefinder/releases).
+> **Use the Windows download above.** GitHub's **Code → Download ZIP** provides source code for developers. Its `distribution/` folder contains installer templates without the executable.
 
-## Use
+The installer needs no administrator access. For portable use, open **FileFinder.exe** directly and keep `_internal` beside it. To pin the app, launch it, right-click its taskbar icon, and select **Pin to taskbar**. Keep the app in the same location after pinning.
 
-1. Add folders or a drive in the sidebar. Indexing starts automatically.
-2. Filenames become available first, followed by readable document text.
-3. Enter a partial filename, words from a document, or an `"exact phrase"`.
-4. Choose Everywhere, Filename, or Contents. Use category filters or enter extensions such as `pdf,docx`.
-5. Select a result for its text preview; open it or show it in its folder.
+Builds are currently unsigned. ARM and 32-bit Windows packages are not provided. [All releases and checksums →](https://github.com/kuldeepumaraiya/filefinder/releases)
 
-Search updates as you type. Click a column heading to sort. Ctrl+F focuses search, Escape clears it, and F5 refreshes the index. Results are capped at 300; narrow the search to see more relevant files.
+## Your first search
 
-### Preview and find within a file
+1. **Add a folder** in the sidebar, such as Downloads or Documents.
+2. **Search a name or phrase.** Filenames become available first; content indexing follows.
+3. **Select a result** to read its text or open the **File preview** tab.
+4. **Find each mention** using Previous / Next, or **F3 / Shift+F3**.
 
-Select a result and use **Text & matches** to read its full indexed text. The find box starts with your search words and can be edited separately. **Previous / Next** jump between highlighted mentions, wrap at the ends, and show the match count and extracted-text line number. F3 moves forward; Shift+F3 moves backward. Double quotes match an exact phrase. Navigation covers the full indexed text, up to the extraction limit; it does not move the cursor in Word or another external application.
+Press **Ctrl+F** to focus search and **F5** to refresh after files change. [Full user guide →](docs/USER_GUIDE.md)
 
-**File preview** shows basic image previews and rendered PDF pages with page controls. Word, Excel, PowerPoint and other documents use extracted text; original Office formatting is not rendered. Open the file for its full layout. Visual previews are limited to 64 MB files and the first frame of animated images.
+## Supported files
 
-## Content support and limits
+| Files | Content search | Preview |
+| --- | --- | --- |
+| Text PDFs | Yes | Extracted text and rendered pages |
+| DOCX, XLSX, PPTX, ODT, ODS, ODP | Yes | Extracted text |
+| Text, CSV, Markdown and common code files | Yes | Text |
+| Supported images | Filename only | Image |
+| Scanned PDFs | Filename only | Rendered pages |
+| Other files, including legacy DOC / XLS / PPT | Filename only | Open in the associated app |
 
-| Format | Search |
-| --- | --- |
-| All regular files | Filename |
-| Text PDFs | Filename and extracted text |
-| DOCX, XLSX, PPTX, ODT, ODS, ODP | Filename and extracted text |
-| Plain text, CSV, Markdown, common source code | Filename and text |
-| Images, scanned PDFs, old DOC/XLS/PPT, audio, video, archives | Filename; no OCR or archive extraction |
-
-XLSX extraction reads worksheet values and shared strings, not Excel's display formatting. Cloud-only files must be downloaded locally for content search. Content extraction is limited to 32 MB per file, one million characters, and 15 seconds per document. Expanded document XML is capped at 64 MB. System/application/dependency folders and symbolic links are skipped. Refresh manually after files change; no automatic file watcher is included.
+Office previews show extracted text rather than the original page or worksheet layout. Match navigation jumps within indexed text inside FileFinder. OCR is not included. Content indexing is limited to 32 MB per file and one million characters. [All limits and troubleshooting →](docs/USER_GUIDE.md#content-support-and-limits)
 
 ## Privacy
 
-The app makes no network requests. It reads selected folders and stores extracted text in `data/index.sqlite3` next to the executable. Read issues are logged in `data/filefinder.log`. The index contains document text: keep it private. Removing a location removes its index entries and leaves the original files intact.
+Your index stays on your computer in `data/` beside the app. It can contain document text, so keep that folder private. Removing a search location leaves your original files intact. Public downloads contain no personal index or documents.
 
-The public repository and distribution must never include a personal index, logs, or user documents. `.gitignore` excludes these files.
+## Build and contribute
 
-## Run from source
+Built with Python, Tkinter, SQLite FTS5, pypdf, Pillow and PDFium.
 
-On Windows with Python 3.10 or newer, including Tkinter:
-
-```powershell
-py -3 -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
-.venv\Scripts\python src\filefinder.py
-```
-
-## Build the executable
-
-```powershell
-.venv\Scripts\python -m pip install -r requirements-build.txt
-.venv\Scripts\python scripts\build.py
-```
-
-Output: `dist/FileFinder/`. The script includes installation helpers and licenses in the Windows distribution. Build on Windows; PyInstaller does not cross-compile Windows executables from Linux.
-
-## Tests
-
-```powershell
-.venv\Scripts\python tests\test_filefinder.py
-.venv\Scripts\python tests\test_ui_v2.py
-.venv\Scripts\python tests\test_match_navigation.py
-dist\FileFinder\FileFinder.exe --packaging-check build\packaging-result.json
-```
-
-The tests create temporary synthetic files and exercise filename/content search, PDFs, Office documents, index updates, Unicode, long Windows paths, previews, filters, and resizing. Desktop UI tests need an interactive Windows session.
-
-## Contributing
-
-Open an issue with steps to reproduce, the Windows version, and the file format involved. Do not upload private documents or search databases. For changes, open a pull request with a concise explanation and the test results.
+- [Run from source, build and test](docs/DEVELOPMENT.md)
+- [Contribute a fix or feature](CONTRIBUTING.md)
+- [Read the changelog](CHANGELOG.md)
 
 ## License
 
-FileFinder code and original logo: [MIT](LICENSE). Bundled third-party components retain their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and `licenses/`.
+FileFinder and its original logo are licensed under [MIT](LICENSE). Bundled dependencies retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md) and [license files](licenses/).

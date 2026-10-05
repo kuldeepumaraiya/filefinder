@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a problem with searching, previews, or installation.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: Please use synthetic examples and remove private file paths or document text.
+  - type: input
+    id: version
+    attributes:
+      label: FileFinder and Windows versions
+      placeholder: FileFinder 2.1.0, Windows 11 x64
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include the search mode, file format, and whether indexing has finished.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Additional details
+      description: Optional screenshot or small synthetic example without private information.
