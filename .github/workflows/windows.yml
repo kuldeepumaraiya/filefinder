@@ -1,0 +1,29 @@
+name: Windows build and tests
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: python -m pip install -r requirements-build.txt
+      - run: python tests/test_filefinder.py
+      - run: python tests/test_ui_v2.py
+      - run: python scripts/build.py
+      - name: Check packaged application
+        shell: pwsh
+        run: |
+          $test = Start-Process dist/FileFinder/FileFinder.exe -ArgumentList '--packaging-check build/packaging-result.json' -Wait -PassThru
+          if ($test.ExitCode -ne 0) { throw 'Packaged check failed' }
+          if (-not (Get-Content build/packaging-result.json | ConvertFrom-Json).passed) { throw 'Check did not pass' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FileFinder-Windows-x64
+          path: dist/FileFinder/
