@@ -16,6 +16,7 @@ jobs:
       - run: python -m pip install -r requirements-build.txt
       - run: python tests/test_filefinder.py
       - run: python tests/test_ui_v2.py
+      - run: python tests/test_match_navigation.py
       - run: python scripts/build.py
       - name: Check packaged application
         shell: pwsh

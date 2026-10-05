@@ -4,8 +4,8 @@ $installTarget = Join-Path $env:LOCALAPPDATA 'Programs\FileFinder'
 if (-not (Test-Path -LiteralPath (Join-Path $installSource 'FileFinder.exe')) -or -not (Test-Path -LiteralPath (Join-Path $installSource '_internal'))) {
     Write-Host ''
     Write-Host 'This folder contains installer templates, not the Windows app.' -ForegroundColor Yellow
-    Write-Host 'Download FileFinder-Windows-v2.0.0.zip from this link:'
-    Write-Host 'https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.0.0/FileFinder-Windows-v2.0.0.zip' -ForegroundColor Cyan
+    Write-Host 'Download FileFinder-Windows-v2.1.0.zip from this link:'
+    Write-Host 'https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.1.0/FileFinder-Windows-v2.1.0.zip' -ForegroundColor Cyan
     Write-Host 'Extract that ZIP, then run Install.cmd beside FileFinder.exe and _internal.'
     throw 'Windows app files are missing. The filefinder-main source-code ZIP cannot be installed directly.'
 }

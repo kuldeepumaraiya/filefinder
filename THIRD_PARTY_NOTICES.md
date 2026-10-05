@@ -7,6 +7,8 @@ FileFinder includes or relies on these components. Their licenses remain separat
 - pypdf 6.18.0: BSD-3-Clause; see its license in `licenses/`.
 - typing_extensions 4.16.0: Python Software Foundation license; see its license in `licenses/`.
 - SQLite: public domain.
+- Pillow 12.3.0: HPND-style license; see its license in `licenses/`.
+- pypdfium2 5.14.0: Apache-2.0 / BSD-3-Clause; PDFium uses BSD-style terms and additional third-party notices. Bundled license and notice files are in `licenses/`.
 - PyInstaller bootloader: GPL with an exception permitting distribution of generated executables under the application's license. PyInstaller is used for packaging; see its upstream license and bootloader exception in `licenses/PyInstaller-COPYING.txt`.
 - Microsoft Visual C++ runtime DLLs: included by the Python Windows distribution under Microsoft's redistribution terms.
 

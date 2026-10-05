@@ -6,13 +6,13 @@ A private Windows desktop search app for finding files by their name or words in
 
 ## Download and install
 
-### [Download the Windows app → FileFinder-Windows-v2.0.0.zip](https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.0.0/FileFinder-Windows-v2.0.0.zip)
+### [Download the Windows app → FileFinder-Windows-v2.1.0.zip](https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.1.0/FileFinder-Windows-v2.1.0.zip)
 
 **For normal use, click the download link above.** GitHub's green **Code → Download ZIP** button downloads developer source code (`filefinder-main`), which does not contain `FileFinder.exe`.
 
-1. Download **FileFinder-Windows-v2.0.0.zip** using the link above.
+1. Download **FileFinder-Windows-v2.1.0.zip** using the link above.
 2. Right-click the ZIP and choose **Extract All**.
-3. Open the extracted **FileFinder-Windows-v2.0.0** folder.
+3. Open the extracted **FileFinder-Windows-v2.1.0** folder.
 4. Double-click **Install.cmd**. Windows may show it as **Install**, with type **Windows Command Script**, when extensions are hidden.
 
 The correct folder contains **FileFinder.exe**, **_internal**, and **Install.cmd together**. If you see `src`, `scripts`, `tests`, or a `distribution` folder containing just installer scripts, you have the developer source package. Download the Windows app using the link above.
@@ -32,6 +32,12 @@ The executable bundles its Python runtime. Builds are currently unsigned. Window
 5. Select a result for its text preview; open it or show it in its folder.
 
 Search updates as you type. Click a column heading to sort. Ctrl+F focuses search, Escape clears it, and F5 refreshes the index. Results are capped at 300; narrow the search to see more relevant files.
+
+### Preview and find within a file
+
+Select a result and use **Text & matches** to read its full indexed text. The find box starts with your search words and can be edited separately. **Previous / Next** jump between highlighted mentions, wrap at the ends, and show the match count and extracted-text line number. F3 moves forward; Shift+F3 moves backward. Double quotes match an exact phrase. Navigation covers the full indexed text, up to the extraction limit; it does not move the cursor in Word or another external application.
+
+**File preview** shows basic image previews and rendered PDF pages with page controls. Word, Excel, PowerPoint and other documents use extracted text; original Office formatting is not rendered. Open the file for its full layout. Visual previews are limited to 64 MB files and the first frame of animated images.
 
 ## Content support and limits
 
@@ -75,6 +81,7 @@ Output: `dist/FileFinder/`. The script includes installation helpers and license
 ```powershell
 .venv\Scripts\python tests\test_filefinder.py
 .venv\Scripts\python tests\test_ui_v2.py
+.venv\Scripts\python tests\test_match_navigation.py
 dist\FileFinder\FileFinder.exe --packaging-check build\packaging-result.json
 ```
 

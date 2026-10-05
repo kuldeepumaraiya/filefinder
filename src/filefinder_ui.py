@@ -43,6 +43,16 @@ class App:
         self._active_query = ''
         self._sort = ('mtime', True)
         self._last_live_update = 0
+        self.preview_content = ''
+        self.matches = []
+        self.match_index = -1
+        self.find_query = tk.StringVar()
+        self.match_label = tk.StringVar(value='0 matches')
+        self.visual_generation = 0
+        self.visual_page = 0
+        self.visual_pages = 0
+        self.visual_row = None
+        self._find_after = None
         self.query = tk.StringVar()
         self.mode = tk.StringVar(value='Everywhere')
         self.ext = tk.StringVar()
@@ -55,7 +65,7 @@ class App:
         self.preview_path = tk.StringVar()
         self.coverage = tk.StringVar(value='')
         self.folder_path = tk.StringVar(value='Choose a folder to see its full path.')
-        window.title('FileFinder 2.0 — Search your PC')
+        window.title('FileFinder 2.1 — Search your PC')
         assets=Path(__file__).resolve().parent/'assets'
         if (assets/'filefinder.ico').exists():
             try: window.iconbitmap(default=str(assets/'filefinder.ico'))
@@ -114,6 +124,8 @@ class App:
         self.ext.trace_add('write',self.schedule_search)
         window.bind('<Control-f>',self.focus_search)
         window.bind('<F5>',lambda e:self.scan())
+        window.bind('<F3>',lambda e:self.move_match(1))
+        window.bind('<Shift-F3>',lambda e:self.move_match(-1))
         self.entry.bind('<Return>',lambda e:self.search())
         self.entry.bind('<Escape>',lambda e:self.query.set(''))
         self.tree.bind('<Return>',lambda e:self.open_file())
@@ -121,6 +133,7 @@ class App:
         self._poll_after = window.after(80,self.poll)
         window.after(150,self.search)
         self.entry.focus_set()
+        self.find_query.trace_add('write',self.schedule_find)
 
     def _sidebar(self):
         side = tk.Frame(self.win,bg=SIDE,width=238,padx=20,pady=24)
@@ -155,7 +168,7 @@ class App:
         self.pausebtn.pack(fill='x',pady=(7,0))
         ttk.Button(footer,text='Help & shortcuts',style='Side.TButton',command=self.help).pack(fill='x',pady=(7,20))
         tk.Label(footer,text='LOCAL & PRIVATE',font=('Segoe UI',8,'bold'),fg='#92d8c2',bg=SIDE).pack(anchor='w')
-        tk.Label(footer,text='Your files stay on this PC.\nFileFinder 2.0',font=('Segoe UI',9),fg='#9099b8',bg=SIDE,justify='left').pack(anchor='w',pady=(6,0))
+        tk.Label(footer,text='Your files stay on this PC.\nFileFinder 2.1',font=('Segoe UI',9),fg='#9099b8',bg=SIDE,justify='left').pack(anchor='w',pady=(6,0))
 
     def _header(self, main):
         ttk.Label(main,text='Find your next file.',font=('Segoe UI',25,'bold'),foreground=INK).pack(anchor='w')
@@ -236,14 +249,42 @@ class App:
         self.coverage_label=tk.Label(preview,textvariable=self.coverage,font=('Segoe UI',9),fg='#37846e',bg=WHITE,justify='left',anchor='w',wraplength=300)
         self.coverage_label.pack(fill='x',pady=(0,7))
         tk.Frame(preview,bg=LINE,height=1).pack(fill='x',pady=(0,8))
-        tk.Label(preview,text='TEXT PREVIEW',font=('Segoe UI',8,'bold'),fg=MUTED,bg=WHITE).pack(anchor='w',pady=(0,6))
-        textframe=tk.Frame(preview,bg=WHITE)
+        self.preview_tabs=ttk.Notebook(preview)
+        self.preview_tabs.pack(fill='both',expand=True)
+        texttab=tk.Frame(self.preview_tabs,bg=WHITE)
+        self.preview_tabs.add(texttab,text='Text & matches')
+        findbar=tk.Frame(texttab,bg=WHITE)
+        findbar.pack(fill='x',pady=(8,5))
+        self.find_entry=ttk.Entry(findbar,textvariable=self.find_query,width=12)
+        self.find_entry.pack(side='left',fill='x',expand=True)
+        self.find_entry.bind('<Return>',lambda e:self.move_match(1))
+        self.prevbtn=ttk.Button(findbar,text='Previous',command=lambda:self.move_match(-1),state='disabled')
+        self.prevbtn.pack(side='left',padx=(4,2))
+        self.nextbtn=ttk.Button(findbar,text='Next',command=lambda:self.move_match(1),state='disabled')
+        self.nextbtn.pack(side='left')
+        tk.Label(texttab,textvariable=self.match_label,font=('Segoe UI',9),fg=MUTED,bg=WHITE,anchor='w').pack(fill='x',pady=(0,5))
+        textframe=tk.Frame(texttab,bg=WHITE)
         textframe.pack(fill='both',expand=True)
         self.text=tk.Text(textframe,wrap='word',height=6,width=24,bd=0,font=('Segoe UI',10),bg=WHITE,fg='#4d556f',padx=0,pady=0,spacing1=2,spacing3=5,state='disabled',highlightthickness=0)
         scrollbar=ttk.Scrollbar(textframe,command=self.text.yview)
         self.text.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side='right',fill='y'); self.text.pack(fill='both',expand=True)
         self.text.tag_configure('hit',background='#e9e2ff',foreground='#49349a')
+        self.text.tag_configure('active_hit',background='#6554d9',foreground=WHITE)
+        self.text.tag_raise('active_hit')
+        visual=tk.Frame(self.preview_tabs,bg=WHITE)
+        self.preview_tabs.add(visual,text='File preview')
+        pagebar=tk.Frame(visual,bg=WHITE)
+        pagebar.pack(fill='x',pady=5)
+        self.page_prev=ttk.Button(pagebar,text='‹ Page',command=lambda:self.change_page(-1),state='disabled')
+        self.page_prev.pack(side='left')
+        self.page_label=tk.StringVar(value='')
+        tk.Label(pagebar,textvariable=self.page_label,bg=WHITE,fg=MUTED).pack(side='left',expand=True)
+        self.page_next=ttk.Button(pagebar,text='Page ›',command=lambda:self.change_page(1),state='disabled')
+        self.page_next.pack(side='right')
+        self.visual_label=tk.Label(visual,text='Select a file for a preview.',bg='#f5f6fa',fg=MUTED,wraplength=230)
+        self.visual_label.pack(fill='both',expand=True)
+        self.preview_tabs.bind('<<NotebookTabChanged>>',lambda e:self.request_visual())
         preview.bind('<Configure>',self.resize_preview)
 
     def resize_preview(self,event):
@@ -392,6 +433,20 @@ class App:
                     if row and self.tree.selection()==(str(row['id']),): self.render_preview(row,query)
                     elif row is None:
                         self.clear_preview(); self.status.set('File details unavailable. Refresh the index.')
+            elif kind=='visual':
+                generation,picture,pages,error=value
+                if generation!=self.visual_generation: continue
+                self.visual_pages=pages
+                if picture:
+                    from PIL import ImageTk
+                    self.visual_image=ImageTk.PhotoImage(picture,master=self.win)
+                    self.visual_label.configure(image=self.visual_image,text='')
+                else:
+                    self.visual_image=None
+                    self.visual_label.configure(image='',text=error)
+                self.page_label.set(f'Page {self.visual_page+1} of {pages}' if pages else '')
+                self.page_prev.configure(state='normal' if self.visual_page>0 else 'disabled')
+                self.page_next.configure(state='normal' if self.visual_page+1<pages else 'disabled')
         self._poll_after=self.win.after(80,self.poll)
 
     def render_rows(self,selected=None):
@@ -424,6 +479,15 @@ class App:
 
     def clear_preview(self):
         self.preview_generation+=1
+        self.visual_generation+=1
+        self.visual_row=None
+        self.visual_page=self.visual_pages=0
+        self.preview_content=''
+        self.matches=[]; self.match_index=-1
+        self.match_label.set('0 matches')
+        for b in (self.prevbtn,self.nextbtn,self.page_prev,self.page_next): b.configure(state='disabled')
+        self.visual_label.configure(image='',text='Select a file for a preview.')
+        self.page_label.set('')
         self.preview_name.set('Select a file')
         self.preview_meta.set('A quick look before you open it.')
         self.preview_path.set(''); self.coverage.set('')
@@ -434,7 +498,7 @@ class App:
     def preview(self,event=None):
         row=self.selected()
         if not row: self.clear_preview(); return
-        self.preview_generation+=1
+        self.clear_preview()
         generation=self.preview_generation
         query=self._active_query
         self.preview_name.set(row['name']); self.preview_path.set(self.display_path(row['path']))
@@ -456,20 +520,72 @@ class App:
         self.preview_meta.set(f'{self.size(row["size"])}  ·  {row["ext"].lstrip(".").upper() or "FILE"}\nModified {modified}')
         self.preview_path.set(self.display_path(row['path'])); self.coverage.set(row['status'])
         self.coverage_label.configure(fg='#37846e' if row['status'].startswith(('Content','Partial')) else '#977738')
-        content=row['content'] or ''
-        tokens=[t for t in re.split(r'[\s.,;:!?/\\_()\[\]{}"-]+',query) if t]
-        position=next((content.casefold().find(t.casefold()) for t in tokens if t.casefold() in content.casefold()),0)
-        start=max(0,position-200)
-        value=('…\n' if start else '')+content[start:start+14000]
+        self.preview_content=row['content'] or ''
+        value=self.preview_content
         if not value:
             value='No text preview is available. Open the file to view it.\n\n'+row['status']
-        elif start+14000<len(content): value+='\n…'
         self.text.configure(state='normal'); self.text.delete('1.0','end'); self.text.insert('1.0',value)
-        for token in tokens[:25]:
-            for match in re.finditer(re.escape(token),value,re.IGNORECASE):
-                self.text.tag_add('hit',f'1.0+{match.start()}c',f'1.0+{match.end()}c')
         self.text.configure(state='disabled')
+        self.find_query.set(query)
+        self.find_matches()
+        self.visual_row=row
+        self.visual_page=0
+        self.visual_label.configure(image='',text='Open this tab to load a preview.')
+        self.request_visual()
         for b in (self.openbtn,self.revealbtn,self.copybtn): b.configure(state='normal')
+
+    def schedule_find(self,*args):
+        if self.closing:return
+        if self._find_after:self.win.after_cancel(self._find_after)
+        self._find_after=self.win.after(180,self.find_matches)
+
+    def find_matches(self):
+        if self._find_after:self.win.after_cancel(self._find_after);self._find_after=None
+        query=self.find_query.get().strip()
+        terms=[query[1:-1]] if query.startswith('"') and query.endswith('"') else [t for t in re.split(r'[\s.,;:!?/\\_()\[\]{}"-]+',query) if t]
+        self.text.tag_remove('hit','1.0','end');self.text.tag_remove('active_hit','1.0','end')
+        self.matches=[];self.match_index=-1
+        if terms and self.preview_content:
+            pattern='|'.join(re.escape(t) for t in sorted(set(terms),key=len,reverse=True) if t)
+            if pattern:self.matches=[(m.start(),m.end()) for m in re.finditer(pattern,self.preview_content,re.IGNORECASE)]
+        ranges=[]
+        for start,end in self.matches:ranges.extend((f'1.0+{start}c',f'1.0+{end}c'))
+        # Batch tag updates to keep long documents responsive.
+        for start in range(0,len(ranges),1000):self.text.tag_add('hit',*ranges[start:start+1000])
+        for b in (self.prevbtn,self.nextbtn):b.configure(state='normal' if self.matches else 'disabled')
+        self.match_label.set('0 matches' if not self.matches else f'{len(self.matches):,} matches')
+        if self.matches:self.move_match(1)
+
+    def move_match(self,direction):
+        if not self.matches:return 'break'
+        self.match_index=(self.match_index+direction)%len(self.matches)
+        start,end=self.matches[self.match_index]
+        a,b=f'1.0+{start}c',f'1.0+{end}c'
+        self.text.tag_remove('active_hit','1.0','end');self.text.tag_add('active_hit',a,b)
+        self.text.see(a)
+        line=int(self.text.index(a).split('.')[0])
+        self.match_label.set(f'{self.match_index+1:,} / {len(self.matches):,} matches · line {line:,}')
+        self.preview_tabs.select(0)
+        return 'break'
+
+    def change_page(self,direction):
+        page=self.visual_page+direction
+        if 0<=page<self.visual_pages:
+            self.visual_page=page;self.request_visual()
+
+    def request_visual(self):
+        if self.closing or not self.visual_row or self.preview_tabs.index(self.preview_tabs.select())!=1:return
+        self.visual_generation+=1
+        generation=self.visual_generation
+        row,page=self.visual_row,self.visual_page
+        width=max(150,self.visual_label.winfo_width()-12)
+        height=max(100,self.visual_label.winfo_height()-12)
+        self.visual_label.configure(image='',text='Loading preview…')
+        def run():
+            from file_previews import render_file
+            result=render_file(row['path'],page,width,height)
+            self.events.put(('visual',(generation,*result)))
+        threading.Thread(target=run,daemon=True).start()
 
     @staticmethod
     def display_path(path):
@@ -504,6 +620,7 @@ class App:
             self.closing=True
             self.stop.set()
             if self._search_after: self.win.after_cancel(self._search_after)
+            if self._find_after: self.win.after_cancel(self._find_after)
             self.win.after_cancel(self._poll_after)
             self.progress.stop()
         if self.is_scanning():

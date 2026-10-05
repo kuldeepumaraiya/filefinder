@@ -21,6 +21,13 @@ def run(index_class,report):
         stream=DecodedStreamObject(); stream.set_data(b'BT /F1 12 Tf 20 200 Td (marigold verification) Tj ET')
         page[NameObject('/Contents')]=writer._add_object(stream)
         with (docs/'report.pdf').open('wb') as f: writer.write(f)
+        from PIL import Image
+        Image.new('RGB',(100,100),'purple').save(docs/'picture.png')
+        from file_previews import render_file
+        image,pages,error=render_file(docs/'report.pdf',0,200,200)
+        assert image and pages==1 and not error,error
+        image,pages,error=render_file(docs/'picture.png',0,200,200)
+        assert image and not error,error
         index=index_class(folder/'test.db'); index.add(str(docs))
         index.scan(threading.Event(),lambda s:None)
         assert len(index.search('faculty',ext='xlsx'))==1
@@ -33,5 +40,4 @@ def run(index_class,report):
         app=App(root,index); root.update()
         assert app.logo.width()==256
         app.close()
-    report.write_text(json.dumps({'passed':True,'checks':['standalone runtime','SQLite FTS','filename search','Office extraction','PDF extraction','multiprocessing worker','Tkinter UI','custom icon']}),encoding='utf8')
-
+    report.write_text(json.dumps({'passed':True,'checks':['standalone runtime','SQLite FTS','filename search','Office extraction','PDF extraction','multiprocessing worker','Tkinter UI','custom icon','PDF page preview','image preview']}),encoding='utf8')
