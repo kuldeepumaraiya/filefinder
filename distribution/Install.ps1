@@ -1,11 +1,16 @@
 $ErrorActionPreference = 'Stop'
 $installSource = $PSScriptRoot
 $installTarget = Join-Path $env:LOCALAPPDATA 'Programs\FileFinder'
+if (-not (Test-Path -LiteralPath (Join-Path $installSource 'FileFinder.exe')) -or -not (Test-Path -LiteralPath (Join-Path $installSource '_internal'))) {
+    Write-Host ''
+    Write-Host 'This folder contains installer templates, not the Windows app.' -ForegroundColor Yellow
+    Write-Host 'Download FileFinder-Windows-v2.0.0.zip from this link:'
+    Write-Host 'https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.0.0/FileFinder-Windows-v2.0.0.zip' -ForegroundColor Cyan
+    Write-Host 'Extract that ZIP, then run Install.cmd beside FileFinder.exe and _internal.'
+    throw 'Windows app files are missing. The filefinder-main source-code ZIP cannot be installed directly.'
+}
 if (Get-Process -Name FileFinder -ErrorAction SilentlyContinue) {
     throw 'Close FileFinder before installing or updating it, then run Install.cmd again.'
-}
-if (-not (Test-Path -LiteralPath (Join-Path $installSource 'FileFinder.exe')) -or -not (Test-Path -LiteralPath (Join-Path $installSource '_internal'))) {
-    throw 'Extract the entire ZIP first. FileFinder.exe and _internal must be next to this installer.'
 }
 if ([IO.Path]::GetFullPath($installSource).TrimEnd('\') -eq [IO.Path]::GetFullPath($installTarget).TrimEnd('\')) {
     throw 'This app is already in its installation folder. Open FileFinder.exe directly.'

@@ -1,5 +1,13 @@
 FILEFINDER 2.0.0 — WINDOWS x64
 
+IF THIS FOLDER CONTAINS ONLY INSTALL SCRIPTS:
+You downloaded the source-code ZIP (filefinder-main). This distribution
+directory contains templates for developers and does not include the app.
+Download the ready-to-use Windows package instead:
+https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.0.0/FileFinder-Windows-v2.0.0.zip
+After extracting it, Install.cmd, FileFinder.exe, and _internal appear together.
+Run that Install.cmd. Do not use Code > Download ZIP for the Windows app.
+
 Copy this entire folder to another Windows 10/11 x64 computer, or extract
 the ZIP before launching. No separate Python installation is needed.
 

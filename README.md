@@ -6,13 +6,22 @@ A private Windows desktop search app for finding files by their name or words in
 
 ## Download and install
 
-Download the Windows x64 ZIP from this repository's Releases page. Extract the entire folder before running it.
+### [Download the Windows app → FileFinder-Windows-v2.0.0.zip](https://github.com/kuldeepumaraiya/filefinder/releases/download/v2.0.0/FileFinder-Windows-v2.0.0.zip)
+
+**For normal use, click the download link above.** GitHub's green **Code → Download ZIP** button downloads developer source code (`filefinder-main`), which does not contain `FileFinder.exe`.
+
+1. Download **FileFinder-Windows-v2.0.0.zip** using the link above.
+2. Right-click the ZIP and choose **Extract All**.
+3. Open the extracted **FileFinder-Windows-v2.0.0** folder.
+4. Double-click **Install.cmd**. Windows may show it as **Install**, with type **Windows Command Script**, when extensions are hidden.
+
+The correct folder contains **FileFinder.exe**, **_internal**, and **Install.cmd together**. If you see `src`, `scripts`, `tests`, or a `distribution` folder containing just installer scripts, you have the developer source package. Download the Windows app using the link above.
 
 - **Install:** run `Install.cmd`. It installs for your Windows user, creates Start Menu and desktop shortcuts, and requires no administrator access.
 - **Portable:** put the extracted folder in a writable location and open `FileFinder.exe`. Keep `_internal` next to the executable.
 - **Taskbar:** launch the executable, right-click its taskbar icon, and choose **Pin to taskbar**.
 
-The executable bundles its Python runtime. Builds are currently unsigned. Windows 10/11 x64 is the intended platform; ARM and 32-bit Windows builds are not provided. A Windows release is prepared with this source; published download availability depends on the release being uploaded.
+The executable bundles its Python runtime. Builds are currently unsigned. Windows 10/11 x64 is the intended platform; ARM and 32-bit Windows builds are not provided. All downloadable builds are on the [Releases page](https://github.com/kuldeepumaraiya/filefinder/releases).
 
 ## Use
 
